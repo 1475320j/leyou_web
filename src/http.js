@@ -2,7 +2,8 @@ import Vue from 'vue'
 import axios from 'axios'
 import config from './config'
 
-axios.defaults.baseURL = config.api; // 设置axios的基础请求路径
+// axios.defaults.baseURL = config.api; // 设置axios的基础请求路径
+axios.defaults.baseURL = 'http://127.0.0.1:10010/api'; // 设置axios的基础请求路径
 axios.defaults.timeout = 2000; // 设置axios的请求时间
 
 // axios.interceptors.request.use(function (config) {
