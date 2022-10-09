@@ -278,7 +278,7 @@ export default {
         if (val && val.length > 0) {
           // 根据分类查询品牌
           this.$http
-            .get("/item/brand/cid/" + this.goods.categories[2].id)
+            .get("/item/brand/of/category?id=" + this.goods.categories[2].id)
             .then(({ data }) => {
               this.brandOptions = data;
             });
