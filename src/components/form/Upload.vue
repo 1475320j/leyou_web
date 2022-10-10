@@ -3,7 +3,7 @@
     <el-upload v-if="multiple"
                :action="baseUrl + url"
                list-type="picture"
-               :on-success="handleSuccess"
+               :on-success="handleUpload"
                :on-preview="handlePictureCardPreview"
                :on-remove="handleRemove"
                ref="multiUpload"
@@ -84,6 +84,75 @@
       }
     },
     methods: {
+      async handleUpload(params) {
+        const file = params.file;
+        const fileType = file.type;
+        const isImage = fileType.indexOf('image') !== -1;
+
+        const isLt2M = file.size < 2 * 1024 * 1024;
+
+        if (!isLt2M) {
+          this.$message.error('上传图片或视频大小不能超过 2MB!');
+          return;
+        }
+
+        if (!isImage) {
+          this.$message.error('请选择图片!');
+          return;
+        }
+        // 准备文件名称
+        let filename = file.name;
+        let uploadUrl = this.url;
+        // 准备上传表单
+        const formData = new FormData();
+        // 判断上传到哪里
+        if (this.needSignature) {
+          // 上传到阿里，进行签名，把接收到的url作为签名接口地址
+          const resp = await this.$http.loadData(this.url);
+          // 判断接口返回的签名时间是否超时
+          if (resp.expire < new Date().getTime()) {
+            this.$message.error('请求超时!');
+            return;
+          }
+          // 修改文件名为随机文件名
+          filename = fileUtil.getFileName(file.name, resp.dir);
+          // 修改上传文件路径
+          uploadUrl = resp.host;
+          // 准备请求参数
+          formData.append("key", filename);
+          formData.append("policy", resp.policy);
+          formData.append("OSSAccessKeyId", resp.accessId);
+          formData.append("success_action_status", '200');
+          formData.append("signature", resp.signature);
+        }
+        formData.append("file", file);
+
+        this.$http.post(uploadUrl, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+          .then(resp => {
+            console.log(resp);
+            if (resp.status == '200') {
+              // 获取文件路径
+              const fileUrl = resp.data || uploadUrl + "/" + filename;
+              // 判断是多文件还是单文件
+              if (!this.multiple) {
+                // 单文件，直接获取地址即可；
+                this.dialogImageUrl = fileUrl;
+                this.$emit("input", fileUrl)
+              } else {
+                // 多文件，放到集合中
+                const files = this.$refs.multiUpload.uploadFiles;
+                files[files.length - 1].response = fileUrl;
+                this.fileList = files;
+                this.$emit("input", files.map(f => f.response))
+              }
+            } else {
+              this.$message.error('上传失败');
+            }
+          }).catch(function (err) {
+          this.$message.error('上传失败');
+          console.log(err);
+        });
+      },
       handleSuccess(resp, file) {
         console.log("handleSuccess")
         if (!this.multiple) {
