@@ -127,31 +127,31 @@
         }
         formData.append("file", file);
 
-        this.$http.post(uploadUrl, formData, {headers: {'Content-Type': 'multipart/form-data'}})
-          .then(resp => {
-            console.log(resp);
-            if (resp.status == '200') {
-              // 获取文件路径
-              const fileUrl = resp.data || uploadUrl + "/" + filename;
-              // 判断是多文件还是单文件
-              if (!this.multiple) {
-                // 单文件，直接获取地址即可；
-                this.dialogImageUrl = fileUrl;
-                this.$emit("input", fileUrl)
-              } else {
-                // 多文件，放到集合中
-                const files = this.$refs.multiUpload.uploadFiles;
-                files[files.length - 1].response = fileUrl;
-                this.fileList = files;
-                this.$emit("input", files.map(f => f.response))
-              }
-            } else {
-              this.$message.error('上传失败');
-            }
-          }).catch(function (err) {
-          this.$message.error('上传失败');
-          console.log(err);
-        });
+        // this.$http.post(uploadUrl, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        //   .then(resp => {
+        //     console.log(resp);
+        //     if (resp.status == '200') {
+        //       // 获取文件路径
+        //       const fileUrl = resp.data || uploadUrl + "/" + filename;
+        //       // 判断是多文件还是单文件
+        //       if (!this.multiple) {
+        //         // 单文件，直接获取地址即可；
+        //         this.dialogImageUrl = fileUrl;
+        //         this.$emit("input", fileUrl)
+        //       } else {
+        //         // 多文件，放到集合中
+        //         const files = this.$refs.multiUpload.uploadFiles;
+        //         files[files.length - 1].response = fileUrl;
+        //         this.fileList = files;
+        //         this.$emit("input", files.map(f => f.response))
+        //       }
+        //     } else {
+        //       this.$message.error('上传失败');
+        //     }
+        //   }).catch(function (err) {
+        //   this.$message.error('上传失败');
+        //   console.log(err);
+        // });
       },
       handleSuccess(resp, file) {
         console.log("handleSuccess")

@@ -13,8 +13,8 @@
         <span style="font-size: 16px; color: #444">品牌LOGO：</span>
       </v-flex>
       <v-flex>
-        <v-upload v-model="brand.image" :multiple="false" :pic-width="250" :pic-height="90" needSignature
-                  url="/upload/signature"/>
+        <v-upload v-model="brand.image" :multiple="false" :pic-width="250" :pic-height="90"
+                  url="/upload/signature" needSignature />
       </v-flex>
     </v-layout>
     <v-layout class="my-4" row>
